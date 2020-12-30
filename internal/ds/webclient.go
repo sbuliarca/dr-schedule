@@ -31,6 +31,7 @@ func (c *PortalClient) GetFreeSlots(startDate time.Time, days int) ([]FreeDaySlo
 		DrCode          string `url:"medCod,omitempty"`
 	}
 
+	//	todo parameterize the dr code and domain
 	endDate := startDate.AddDate(0, 0, days)
 	params := &FreeSlotsParams{Hcon: "ConnectionHM",
 		StartDate:       startDate.Format(DateFormat),
