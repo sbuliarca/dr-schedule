@@ -48,8 +48,10 @@ func main() {
 
 	service := ds.NewService(cal, pc)
 
-	c := cron.New()
-	_, err = c.AddFunc("@every 5m", func() {
+	c := cron.New(cron.WithChain(
+		cron.SkipIfStillRunning(cron.VerbosePrintfLogger(logrus.New()))))
+
+	_, err = c.AddFunc("@every 1m", func() {
 		logrus.Infof("Started checking for schedule")
 		if err := service.SyncSlots(time.Now()); err != nil {
 			logrus.Errorf("failed syncing calendar: %v", err)
