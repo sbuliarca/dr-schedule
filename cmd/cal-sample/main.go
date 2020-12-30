@@ -130,12 +130,12 @@ func main() {
 		},
 	}
 
-	_, err = srv.Events.Insert("c72qrp4k0rcc9m7dgaaeqali2k@group.calendar.google.com", event).Do()
+	_, err = srv.Events.Insert("6j9vbq93sa5c0rj7jj4jjfj1ek@group.calendar.google.com", event).Do()
 	if err != nil {
 		log.Fatalf("Could not insert event, err: %v", err)
 	}
 
-	events, err := srv.Events.List("c72qrp4k0rcc9m7dgaaeqali2k@group.calendar.google.com").ShowDeleted(false).
+	events, err := srv.Events.List("6j9vbq93sa5c0rj7jj4jjfj1ek@group.calendar.google.com").ShowDeleted(false).
 		SingleEvents(true).TimeMin(t).MaxResults(10).OrderBy("startTime").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)

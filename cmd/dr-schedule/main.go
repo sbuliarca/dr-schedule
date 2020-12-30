@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -22,46 +22,71 @@ import (
 )
 
 func main() {
+	// todo add command parameters
+	configureLogger("info", "text")
 	pc := ds.NewPortalClient("https://portal.lavitamed.ro/")
 
 	b, err := ioutil.ReadFile("credentials.json")
 	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
+		logrus.Fatalf("Unable to read client secret file: %v", err)
 	}
 
 	// If modifying these scopes, delete your previously saved token.json.
 	config, err := google.ConfigFromJSON(b, calendar.CalendarScope)
 	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
+		logrus.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
 	client := getClient(config)
 
 	srv, err := calendar.New(client)
 	if err != nil {
-		log.Fatalf("Unable to retrieve Calendar client: %v", err)
+		logrus.Fatalf("Unable to retrieve Calendar client: %v", err)
 	}
 
-	cal := ds.NewCal(srv, "c72qrp4k0rcc9m7dgaaeqali2k@group.calendar.google.com")
+	// todo: parameterize the calendar id
+	cal := ds.NewCal(srv, "6j9vbq93sa5c0rj7jj4jjfj1ek@group.calendar.google.com")
 
 	service := ds.NewService(cal, pc)
+	testDate := time.Date(2021, 1, 4, 0, 0, 0, 0, ds.LocalLoc).UTC()
+
 	c := cron.New()
-	_, err = c.AddFunc("* * * * *", func() {
+	_, err = c.AddFunc("@every 5m", func() {
 		logrus.Infof("Started checking for schedule")
-		if err := service.SyncSlots(time.Now()); err != nil {
+		if err := service.SyncSlots(testDate); err != nil {
 			logrus.Errorf("failed syncing calendar: %v", err)
 		}
 	})
 	if err != nil {
-		log.Fatalf("could not add scheduling function, err: %v", err)
+		logrus.Fatalf("could not add scheduling function, err: %v", err)
 	}
 
 	c.Start()
+
+	logrus.Info("Started scheduling app")
 
 	waitForShutdown()
 	logrus.Infof("Shutdown triggered, waiting for scheduler to finish")
 
 	ctx := c.Stop()
 	<-ctx.Done()
+}
+
+func configureLogger(level, format string) {
+	l, err := logrus.ParseLevel(level)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{"log_level": level}).
+			WithError(err).
+			Panic("invalid log level")
+	}
+	logrus.SetLevel(l)
+
+	format = strings.ToLower(format)
+	if format != "text" && format != "json" {
+		logrus.Panicf("invalid log format: %s", format)
+	}
+	if format == "json" {
+		logrus.SetFormatter(&logrus.JSONFormatter{})
+	}
 }
 
 func waitForShutdown() {
@@ -91,12 +116,12 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 
 	var authCode string
 	if _, err := fmt.Scan(&authCode); err != nil {
-		log.Fatalf("Unable to read authorization code: %v", err)
+		logrus.Fatalf("Unable to read authorization code: %v", err)
 	}
 
 	tok, err := config.Exchange(context.TODO(), authCode)
 	if err != nil {
-		log.Fatalf("Unable to retrieve token from web: %v", err)
+		logrus.Fatalf("Unable to retrieve token from web: %v", err)
 	}
 	return tok
 }
@@ -118,7 +143,7 @@ func saveToken(path string, token *oauth2.Token) {
 	fmt.Printf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
-		log.Fatalf("Unable to cache oauth token: %v", err)
+		logrus.Fatalf("Unable to cache oauth token: %v", err)
 	}
 	defer f.Close()
 	json.NewEncoder(f).Encode(token)
