@@ -47,12 +47,11 @@ func main() {
 	cal := ds.NewCal(srv, "6j9vbq93sa5c0rj7jj4jjfj1ek@group.calendar.google.com")
 
 	service := ds.NewService(cal, pc)
-	testDate := time.Date(2021, 1, 4, 0, 0, 0, 0, ds.LocalLoc).UTC()
 
 	c := cron.New()
 	_, err = c.AddFunc("@every 5m", func() {
 		logrus.Infof("Started checking for schedule")
-		if err := service.SyncSlots(testDate); err != nil {
+		if err := service.SyncSlots(time.Now()); err != nil {
 			logrus.Errorf("failed syncing calendar: %v", err)
 		}
 	})
