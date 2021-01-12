@@ -101,9 +101,6 @@ func (s *Service) SyncSlots(startTime time.Time) error {
 		}
 		freeDaySlots := getFreeDaySlots(freeSlots, dayToProcess)
 		logrus.Debugf("found free slots for day %v : %v", dayToProcess, freeDaySlots)
-		if freeDaySlots == nil {
-			continue
-		}
 
 		if err := s.syncDay(dayToProcess, daySched, freeDaySlots, calEvents); err != nil {
 			return err
