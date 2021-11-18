@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -24,6 +25,7 @@ import (
 func main() {
 	// todo add command parameters
 	configureLogger("info", "text")
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	pc := ds.NewPortalClient("https://portal.lavitamed.ro/")
 
 	b, err := ioutil.ReadFile("credentials.json")
