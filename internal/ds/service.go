@@ -50,27 +50,27 @@ const daysToSchedule = 7
 var Schedule = map[time.Weekday]DaySchedule{
 	time.Monday: {
 		StartHour: 17, StartMin: 30,
-		EndHour: 20, EndMin: 0,
+		EndHour: 20, EndMin: 30,
 		SlotDuration: 30,
 	},
 	time.Tuesday: {
-		StartHour: 8, StartMin: 0,
+		StartHour: 7, StartMin: 30,
 		EndHour: 10, EndMin: 30,
 		SlotDuration: 30,
 	},
 	time.Wednesday: {
 		StartHour: 17, StartMin: 30,
-		EndHour: 20, EndMin: 0,
+		EndHour: 20, EndMin: 30,
 		SlotDuration: 30,
 	},
 	time.Thursday: {
-		StartHour: 8, StartMin: 0,
+		StartHour: 7, StartMin: 30,
 		EndHour: 10, EndMin: 30,
 		SlotDuration: 30,
 	},
 	time.Friday: {
 		StartHour: 17, StartMin: 30,
-		EndHour: 20, EndMin: 0,
+		EndHour: 20, EndMin: 30,
 		SlotDuration: 30,
 	},
 }
