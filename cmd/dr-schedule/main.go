@@ -20,13 +20,14 @@ import (
 	"google.golang.org/api/calendar/v3"
 
 	"github.com/dr-schedule/internal/ds"
+	"github.com/dr-schedule/internal/ds/wpamelia"
 )
 
 func main() {
 	// todo add command parameters
 	configureLogger("info", "text")
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	pc := ds.NewPortalClient("https://portal.lavitamed.ro/")
+	pc := wpamelia.NewClient("https://lavitamed.ro/")
 
 	b, err := ioutil.ReadFile("credentials.json")
 	if err != nil {
