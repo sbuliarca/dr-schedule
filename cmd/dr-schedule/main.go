@@ -51,6 +51,13 @@ func main() {
 
 	service := ds.NewService(cal, pc)
 
+	foundDuplicate := true
+	for foundDuplicate {
+		if foundDuplicate, err = cal.CleanDuplicateEvents(time.Now(), 31); err != nil {
+			logrus.Fatalf("failed cleaning up duplicate calendar events on startup: %v", err)
+		}
+	}
+
 	c := cron.New(cron.WithChain(
 		cron.SkipIfStillRunning(cron.VerbosePrintfLogger(logrus.New()))))
 

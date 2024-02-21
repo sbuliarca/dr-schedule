@@ -46,7 +46,7 @@ type DaySchedule struct {
 }
 
 // parameterize the days to schedule
-const daysToSchedule = 7
+const daysToSchedule = 31
 
 const defaultSlotDuration = 30
 
